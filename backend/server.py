@@ -14,6 +14,7 @@ import report_routes
 import request_routes
 import user_routes
 from db import client, ensure_indexes
+from scheduler import start_scheduler
 from seed import ensure_seed
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -58,6 +59,7 @@ app.add_middleware(
 async def startup():
     await ensure_indexes()
     await ensure_seed()
+    start_scheduler()
     logger.info("PRINT PACK INC API ready")
 
 

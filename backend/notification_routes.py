@@ -3,7 +3,8 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from db import clean, db, now_utc, oid
-from deps import get_current_user
+from deps import get_current_user, require_roles
+from scheduler import run_reminder_cycle
 
 router = APIRouter()
 
@@ -55,3 +56,10 @@ async def register_device(body: DeviceBody, user=Depends(get_current_user)):
 async def unregister_device(body: DeviceBody, user=Depends(get_current_user)):
     await db.devices.delete_one({"token": body.token, "user_id": str(user["_id"])})
     return {"ok": True}
+
+
+@router.post("/run-reminders")
+async def run_reminders(admin=Depends(require_roles("Admin"))):
+    """Manually trigger the reminder worker (also runs automatically every 5 min)."""
+    counts = await run_reminder_cycle()
+    return {"ok": True, "sent": counts}
