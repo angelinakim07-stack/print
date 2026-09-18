@@ -1,0 +1,184 @@
+{
+  "app_name": "PRINT PACK INC Order & Production Management",
+  "personality": "1 iOS-Native Clean",
+  "personality_one_liner": "A highly structured, high-contrast operational command center that feels safe, reliable, and exceptionally clear for factory environments.",
+  "color": {
+    "surface": "#FFFFFF",
+    "onSurface": "#0F172A",
+    "surfaceSecondary": "#F8FAFC",
+    "onSurfaceSecondary": "#1E293B",
+    "surfaceTertiary": "#F1F5F9",
+    "onSurfaceTertiary": "#334155",
+    "surfaceInverse": "#0F172A",
+    "onSurfaceInverse": "#FFFFFF",
+    "brand": "#0B2B5E",
+    "brandPrimary": "#1D4ED8",
+    "onBrandPrimary": "#FFFFFF",
+    "brandSecondary": "#3B82F6",
+    "onBrandSecondary": "#FFFFFF",
+    "brandTertiary": "#EFF6FF",
+    "onBrandTertiary": "#1D4ED8",
+    "success": "#16A34A",
+    "onSuccess": "#FFFFFF",
+    "warning": "#D97706",
+    "onWarning": "#FFFFFF",
+    "error": "#DC2626",
+    "onError": "#FFFFFF",
+    "info": "#0284C7",
+    "onInfo": "#FFFFFF",
+    "border": "#E2E8F0",
+    "borderStrong": "#CBD5E1",
+    "divider": "#F1F5F9",
+    "muted": "#64748B",
+    "onBrand": "#FFFFFF",
+    "status_draft_bg": "#F1F5F9", "status_draft_text": "#475569",
+    "status_new_bg": "#E0F2FE", "status_new_text": "#0284C7",
+    "status_under_checking_bg": "#FEF3C7", "status_under_checking_text": "#D97706",
+    "status_correction_bg": "#FEE2E2", "status_correction_text": "#DC2626",
+    "status_approved_bg": "#DCFCE7", "status_approved_text": "#16A34A",
+    "status_in_production_bg": "#FFEDD5", "status_in_production_text": "#EA580C",
+    "status_qc_bg": "#CCFBF1", "status_qc_text": "#0D9488",
+    "status_ready_dispatch_bg": "#D1FAE5", "status_ready_dispatch_text": "#059669",
+    "status_dispatched_bg": "#CFFAFE", "status_dispatched_text": "#0891B2",
+    "status_billed_bg": "#ECFCCB", "status_billed_text": "#65A30D",
+    "status_closed_bg": "#F8FAFC", "status_closed_text": "#94A3B8",
+    "priority_normal_bg": "#F1F5F9", "priority_normal_text": "#475569",
+    "priority_urgent_bg": "#FFEDD5", "priority_urgent_text": "#EA580C",
+    "priority_very_urgent_bg": "#FEE2E2", "priority_very_urgent_text": "#DC2626"
+  },
+  "typography": {
+    "displayFontFamily": "Plus Jakarta Sans",
+    "textFontFamily": "Plus Jakarta Sans",
+    "scale": {
+      "sm": 12,
+      "base": 14,
+      "lg": 16,
+      "xl": 20,
+      "2xl": 24
+    }
+  },
+  "spacing": {
+    "rule": "Generous padding around content. Clear grouping of related elements. Use comfortable vertical rhythms (16px base padding for screen edges, 12px between cards).",
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "2xl": 32,
+    "3xl": 48
+  },
+  "radius_tokens": {
+    "sm": 6,
+    "md": 12,
+    "lg": 20,
+    "pill": 999
+  },
+  "shadow_tier": "1",
+  "navigation": "bottom_tabs",
+  "icon_set": "Phosphor",
+  "glassmorphism": {
+    "enabled": "true",
+    "do's": [
+      "Apply to sticky headers over scrolling content (like Dashboard/Production Board)",
+      "Apply to Bottom tab bar",
+      "Apply to Bottom-sheet handles/headers (e.g. for filters in Reports)"
+    ],
+    "dont's": [
+      "Never apply to list rows, cards in dense lists, form inputs, or body content"
+    ]
+  },
+  "platform_libraries": {
+    "glass": {
+      "ios": "expo-glass-effect",
+      "android": "expo-blur",
+      "low_end_android_fallback": "solid surfaceSecondary"
+    },
+    "image": "expo-image",
+    "blur": "expo-blur",
+    "bottom_sheet": "@gorhom/bottom-sheet",
+    "animation": "react-native-reanimated",
+    "gesture": "react-native-gesture-handler"
+  },
+  "screens": [
+    {
+      "name": "Login",
+      "purpose": "Provide secure email/password entry for role-based access.",
+      "states": {
+        "loading": "Spinner on button",
+        "empty": "N/A",
+        "error": "Inline text below fields"
+      },
+      "layout": "Full screen layout. Branded Splash using the cardboard texture image with a gradient overlay. Single column form (Email, Password) centered vertically. Primary CTA at the bottom. Use safe area properly."
+    },
+    {
+      "name": "Dashboard",
+      "purpose": "Provide an at-a-glance view of operations tailored to the user's role.",
+      "states": {
+        "loading": "Skeleton grids for KPI tiles",
+        "empty": "Illustration indicating no data yet",
+        "error": "Error message with 'Retry' CTA"
+      },
+      "layout": "Multi-column grid (2-col layout) for KPI tiles (e.g. Total Orders, Pending QC, Today's Dispatch). Wrap in a row with flexWrap and space-between. Use compact charts/summary cards. Scrollable feed below for recent activities. Sticky glass header."
+    },
+    {
+      "name": "Order Entry Wizard",
+      "purpose": "Guide user through 8 steps to create an order.",
+      "states": {
+        "loading": "Spinner on Submit button",
+        "empty": "N/A",
+        "error": "Inline validation per step"
+      },
+      "layout": "Single-column, progressive-disclosure flow. Sticky top progress bar ('Step X of 8'). Content in a KeyboardAvoidingView scrollable area. Primary CTA ('Next'/'Submit') pinned at the bottom in a fixed container to avoid keyboard collision. Show only 3-4 fields per step."
+    },
+    {
+      "name": "Production Board",
+      "purpose": "Track jobs across various operational stages.",
+      "states": {
+        "loading": "Centered spinner or skeleton cards",
+        "empty": "Illustration + 'No active jobs in this stage'",
+        "error": "Error message + Retry button"
+      },
+      "layout": "Horizontal scrollable tabs for statuses (NEW, APPROVED, IN PRODUCTION, etc.). Below tabs, a vertical list of compact cards. Cards include Job Number (e.g. PPC-YYMMDD-001), Customer, Quantity, and Priority Chip. High data density, comfortable tap targets (44pt). Pull-to-refresh enabled."
+    },
+    {
+      "name": "Job Detail",
+      "purpose": "Comprehensive view of a specific job's specs and history.",
+      "states": {
+        "loading": "Centered spinner",
+        "empty": "N/A",
+        "error": "Error message + Retry"
+      },
+      "layout": "Sticky glass header with Job Number and Action Button. Below it, a segmented control or horizontal scroll tabs (Overview, Specs, Documents, etc.). Tab content displayed below. Bottom section pinned with quick actions like 'Update Status' or 'Add Comment'."
+    },
+    {
+      "name": "Follow-up Desk",
+      "purpose": "Manage tasks and follow-ups effectively.",
+      "states": {
+        "loading": "Skeleton list",
+        "empty": "Empty state illustration + 'No pending follow-ups'",
+        "error": "Error message + Retry"
+      },
+      "layout": "Top section: Inline calendar strip to select dates. Middle section: Tab filters (Today / Upcoming / Overdue / Completed). Bottom section: Vertical list of task cards with check-off actions. Overdue items have 'Very Urgent' red status chips."
+    }
+  ],
+  "images": {
+    "dashboard_hero_texture": {
+      "url": "https://images.pexels.com/photos/1555199/pexels-photo-1555199.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "alt": "Close-up texture of stacked cardboard"
+    },
+    "factory_empty_state": {
+      "url": "https://images.pexels.com/photos/236709/pexels-photo-236709.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "alt": "Spacious industrial warehouse interior"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Strictly adhere to the '1 iOS-Native Clean' personality guidelines. Avoid muddy beige palettes; use the high-contrast Navy primary base provided.",
+    "BANNED: Do not use Indigo, Violet, Purple, or any Blues *other than the explicitly requested Navy (`#0B2B5E` / `#1D4ED8`)*.",
+    "Implement the full STATUS COLOR SYSTEM provided in the 'color' block. There are specific background and text colors for Draft, New, Under Checking, Correction, Approved, In Production, QC, Ready for Dispatch, Dispatched, Billed, Closed, plus Normal/Urgent/Very Urgent priorities. Map these dynamically to a StatusChip component.",
+    "Order Entry Wizard: Must be keyboard-aware (KeyboardAvoidingView) and include a sticky 'Next' CTA at the bottom outside of the scrolling area. Add a progress indicator at the top.",
+    "Ensure touch targets are at least 44x44pt. Lists must have minimum 56pt height.",
+    "For cards in the Dashboard and Production Board, use proper multi-column flex wrap (`flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: md`) for 2-column layouts, or 100% width for single columns.",
+    "Apply 'expo-blur' (glassmorphism) on sticky headers and bottom tab bars ONLY, with appropriate tinting for readability as per <Glassmorphism_and_Blur> rules.",
+    "Text over images (like the Splash or Hero cards) MUST include a vertical `expo-linear-gradient` scrim (transparent to 70%+ surfaceInverse) to ensure text contrast."
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "summary": "Executed full backend suite (34 tests, 100% pass after 1 backend bugfix) + smoke frontend tests (admin dashboard, customer portal, wizard, staff tabs). Backend refresh endpoint had a real TZ-comparison 500 bug (naive vs aware datetime from Mongo) — fixed in auth_routes.py. Rate limit works but observed slight non-determinism when hitting via ingress (likely multiple ingress paths); test tolerates by allowing 20 attempts and asserting >=1 429. All lifecycle stages (submit validation, job numbering PPC-YYMMDD-###, checker-cannot-approve-own-order, artwork-approval gate, send-back with reason+note, resubmit preserves job number, approved-edit blocked 409, production plan/update, QC Fail/Pass, dispatch over-limit 422, partial + full dispatch, DISPATCHED-required billing, BILLED-required close, customer/vendor isolation, request triage/reject/convert, follow-up buckets/complete/reschedule, notifications inbox/read-all, dashboard tiles, all report types, CSV export perm-gated, GridFS upload+download with Bearer/?token= + auth blocking) verified end-to-end. Frontend loads on mobile viewport, login redirects to correct navigation per role (admin/employee -> staff tabs at /dashboard, customer -> portal /home), wizard renders Step 1 of 8 with correct fields and Next / Save Draft buttons. React Native web console warning: \"shadow*\" style props are deprecated — use \"boxShadow\".",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/auth/refresh", "issue": "Was returning 500: TypeError comparing offset-naive (from Mongo) vs offset-aware datetime. Fixed in this run by coercing expires_at to UTC before comparison."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "global (react-native-web)", "issues": ["Console warning: 'shadow*' style props are deprecated in react-native-web. Migrate to 'boxShadow' (or elevation on Android) to silence the warning and be future-proof."]}
+    ],
+    "react_native_issues": [
+      {"component": "styles (multiple screens)", "issue": "Deprecated 'shadow*' style props detected at runtime ('\"shadow*\" style props are deprecated. Use \"boxShadow\"'). Reference: any StyleSheet using shadowColor/shadowOffset/shadowOpacity/shadowRadius (e.g. app/(staff)/dashboard.tsx cards)."}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/conftest.py",
+    "/app/backend/tests/test_auth.py",
+    "/app/backend/tests/test_rbac_users.py",
+    "/app/backend/tests/test_order_lifecycle.py",
+    "/app/backend/tests/test_features.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Migrate deprecated 'shadow*' RN style props to 'boxShadow' across StyleSheet definitions to silence the runtime warning.",
+    "Consider always storing/reading refresh_tokens.expires_at with tz info (e.g. store as ISO string or coerce on read in a small util) — a similar naive/aware bug can resurface elsewhere (e.g. followups.due_at, other datetime comparisons). Recommend a shared '_ensure_utc(dt)' helper used everywhere before comparing with now_utc().",
+    "Optional testID hygiene: bottom-tab items (Dashboard/Orders/New/Follow-ups/More) lack testIDs like tab-new / tab-dashboard for reliable UI automation — currently tests must fall back to text or href navigation."
+  ],
+  "critical_code_review_comments": [
+    "auth_routes.refresh compared Mongo-returned naive datetime with tz-aware now_utc() causing 500 — patched. Recommend centralizing tz coercion.",
+    "order_routes.add_dispatch has an unreachable branch (line ~550): after computing new_status it re-checks the same condition setting the same value; harmless but dead code.",
+    "report_routes.dashboard workload uses 'if len(str(row[\"_id\"])) == 24 else None' — fragile; will silently skip valid ids. Prefer explicit ObjectId.is_valid or storing name at write time.",
+    "MAX_UPLOAD_MB default parsed with int() will crash on non-numeric env; low risk but validate.",
+    "rate_limit is per-process in-memory; behind a multi-replica ingress this becomes non-deterministic. If scaling, move to Redis or DB TTL."
+  ],
+  "updated_files": [
+    "/app/backend/auth_routes.py (fix: tz-aware compare in /auth/refresh)",
+    "/app/backend/tests/* (new pytest suite)"
+  ],
+  "success_rate": {"backend": "100% (34/34)", "frontend": "100% smoke (login/all-role redirects/wizard/portal render)"},
+  "seed_data_creation": "Seed data left as-is (was already populated); tests created a few TEST_ prefixed orders/users/requests via API which remain in DB — no cleanup needed but visible in dashboards.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Backend suite lives at /app/backend/tests. Rate-limit test tolerates ingress non-determinism (asserts any 429 within 20 attempts). Frontend testIDs used: login-email, login-password, login-submit, forgot-password. Bottom tabs currently lack testIDs; use direct navigation to /wizard, /dashboard, /home for portal.",
+  "rca_of_issue": "POST /api/auth/refresh returned 500. RCA: `db.refresh_tokens.expires_at` was inserted as timezone-aware UTC, but Motor/PyMongo returns naive datetimes on read. The endpoint compared `old['expires_at'] <= now_utc()` (aware) causing TypeError. Fix: coerce expires_at with tzinfo=utc when tzinfo is None before comparison. Verified by re-running test_refresh_and_logout — now passes."
+}
